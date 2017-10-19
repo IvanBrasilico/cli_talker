@@ -1,18 +1,9 @@
 '''HOT Tests for Maitre and Waiter classes
 Needs a running API. Using example from Flask-Restless
 Just run python3 quickstart.py'''
-import locale
-import gettext
 import json
 from cli_talker.service_binder import (Maitre, RESTWaiter)
-
-try:
-    LOCALE, _E = locale.getdefaultlocale()
-    language = gettext.translation('cli_talker', 'locale/', [LOCALE])
-    language.install()
-except FileNotFoundError:
-    def _(string):
-        return string
+import cli_talker.localizations
 
 URL = 'http://localhost:5000'
 
