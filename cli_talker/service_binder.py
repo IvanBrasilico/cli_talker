@@ -103,7 +103,10 @@ class RESTWaiter(BaseWaiter):
             _pk = params.pop('pk', None)
             if _pk is not None:
                 resource = resource + '/%s' % _pk
-
+            else:
+                local_list = [v for k, v in _data.items()]
+                resource = resource + '%20'.join(local_list)
+        print('GET:', resource)
         response = requests.get(resource, data=_data,
                                 headers={'content-type': 'application/json'})
         if response.status_code == 200:  # Success
@@ -160,6 +163,9 @@ class RESTWaiter(BaseWaiter):
             resource = resource + '/%s' % params
         elif isinstance(params, dict):
             _data = params
+            _pk = params.pop('pk', None)
+            if _pk is not None:
+                resource = resource + '/%s' % _pk
 
         response = requests.delete(resource, data=_data,
                                    headers={'content-type': 'application/json'})

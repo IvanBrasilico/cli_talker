@@ -89,6 +89,7 @@ def talker(text, rules):
     # Splits like in shell: splits/tokenizes on spaces,
     # preserving expressions between quotes
     alist = shlex.split(text)
+    # print(text)
     actual_level, level = locate_next(text, rules)
     if isinstance(actual_level, dict):
         if actual_level == {}:
