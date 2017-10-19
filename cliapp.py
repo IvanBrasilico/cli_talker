@@ -39,7 +39,8 @@ RULES = {'person':
 waiter = None
 if len(sys.argv) > 1:
     type = sys.argv[1]
-    waiter = RESTWaiter()
+    if type == 'json':
+        waiter = RESTWaiter()
 
 word = ''
 context = ''

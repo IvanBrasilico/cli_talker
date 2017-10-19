@@ -1,6 +1,7 @@
 import ast
 import re
 from setuptools import find_packages, setup
+import setuptools.command.test
 
 
 _version_re = re.compile(r'__version__\s+=\s+(.*)')
@@ -21,6 +22,9 @@ setup(
     packages=find_packages(),
     install_requires=[
     ],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
+    test_suite="tests",
     package_data={
         'cli_talker': ['/locale/*'],
     },
@@ -46,6 +50,5 @@ setup(
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Utilities',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
     ],
 )

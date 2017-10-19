@@ -52,7 +52,9 @@ def locate_next(words, rules, level=1):
 
 def process_parameters(params):
     '''Process the parameter chain
-    Used by talker'''
+    Used by talker
+    Returns list of parameter names and number of
+    parameters required'''
     if params is None:
         return None
     result = []
@@ -69,7 +71,7 @@ def talker(text, rules):
     '''Interactive maps sequence of words to rules
     Rules(dict) map access to a resource (DB, ORM, API) throungh
     Returns two values:
-     - message or resource: a feeedback to user or
+     - message or resource: a feeedback to user or resource to access
      - stay flag (True or False)
     text: a phrase, a sequence of words by space passed by the Pattern object
     rules: a dict on format rules =
@@ -89,9 +91,9 @@ def talker(text, rules):
     alist = shlex.split(text)
     actual_level, level = locate_next(text, rules)
     if isinstance(actual_level, dict):
-        resource = actual_level.get('resource')
         if actual_level == {}:
             return _('Unrecognized command, exiting...'), False
+        resource = actual_level.get('resource')
         if resource is None:
             local_dict = actual_level.copy()
             message = local_dict.pop('_message', '')
