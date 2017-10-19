@@ -1,0 +1,34 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2017-10-18 12:02-0200\n"
+"PO-Revision-Date: 2017-10-18 12:04-0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pt_BR\n"
+
+#: test_api.py:8
+msgid "This is a translatable string."
+msgstr "Esta é uma sequência para traduzir."
+
+#: test_api.py:28
+msgid "Misconfiguration Error. Parameter \"type\" needed"
+msgstr "Erro de configuração. Parâmetro \"type\" necessário."
+
+#: test_api.py:63
+msgid "Misconfiguration Error. Parameter \"method\" needed"
+msgstr "Erro de configuração. Parâmetro \"method\" necessário."
+
+#: test_api.py:68
+msgid "Misconfiguration Error. Parameter \"resource\" needed"
+msgstr "Erro de configuração. Parâmetro \"resource\" necessário."
