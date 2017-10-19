@@ -10,7 +10,7 @@ RULES = {'person':
           'view': {'type': 'json_api',
                    'method': 'GET',
                    'resource': URL + '/api/person',
-                   'params': [{'name': 'fk', 'required': True}]
+                   'params': [{'name': 'pk', 'required': True}]
                    },
           'insert': {'type': 'json_api',
                      'method': 'POST',
@@ -21,13 +21,13 @@ RULES = {'person':
           'update': {'type': 'json_api',
                      'method': 'PUT',
                      'resource': URL + '/api/person',
-                     'params': [{'name': 'fk', 'required': True},
+                     'params': [{'name': 'pk', 'required': True},
                                 {'name': 'name', 'required': True}]
                      },
           'delete': {'type': 'json_api',
                      'method': 'DELETE',
                      'resource': URL + '/api/person',
-                     'params': [{'name': 'fk', 'required': True}]
+                     'params': [{'name': 'pk', 'required': True}]
                      },
           '_message': _('Enter command: ')
           }
@@ -56,10 +56,10 @@ def test_process_parameters():
     # Test examples configuration
     returned_dict, level = locate_next('person view', RULES)
     params = returned_dict['params']
-    assert  params == [{'name': 'fk', 'required': True}]
+    assert params == [{'name': 'pk', 'required': True}]
     assert level == 2
     param_list, nrequired = process_parameters(params)
-    assert param_list == ['fk']
+    assert param_list == ['pk']
     assert nrequired == 1
 
 
