@@ -4,12 +4,14 @@ São as funcões que geram o conteúdo para a submissão à
 API que o Usuário acessa.
 '''
 import json
-from botteryapp import app
+
 from cli_talker.cli_talker import talker
 from cli_talker.service_binder import RESTWaiter
 import rules
 
-RULES = rules.RULES2
+from botteryapp import app
+
+
 waiter = RESTWaiter()
 
 URL_APP = 'http://brasilico.pythonanywhere.com/'
@@ -28,8 +30,8 @@ def two_tokens(text):
 def help_text(message):
     '''Retorna a lista de Patterns/ disponíveis'''
     # TODO Fazer modo automatizado
-    lstatus = [str(key) + ': ' + value + ' ' for key,
-               value in list(enumerate(STATUS))]
+    # lstatus = [str(key) + ': ' + value + ' ' for key,
+    #           value in list(enumerate(STATUS))]
     str_end_hook = ', '.join(END_HOOK_LIST)
     return ('help - esta tela de ajuda \n'
             'ping - teste, retorna "pong"\n'
@@ -42,15 +44,23 @@ def say_help(message):
     return 'Não entendi o pedido. \n Digite help para uma lista de comandos.'
 
 
-def interactive(message):
+def tec_view(message):
+    return interactive(message, rules.RULES_TEC)
+
+
+def flask_restless_view(message):
+    return interactive(message, rules.RULES_FLASK)
+
+
+def interactive(message, cli_rules):
     app.hang_in(message)
-    response, stay = talker(app.context[message.user.id], RULES)
+    response, stay = talker(app.context[message.user.id], cli_rules)
     if not stay:
         app.hang_out(message)
     print('comando:', response)
     if isinstance(response, dict) and waiter is not None:
         response, error, status_code = waiter.process_order(response)
-        #response = response.decode()
+        # response = response.decode()
         print('Erro:', error, status_code)
         if error is None:
             response = clever_json2md(response)

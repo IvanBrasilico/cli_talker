@@ -8,22 +8,25 @@ import cli_talker.localizations
 class ContextApp(App):
     def __init__(self):
         self.context = dict()
-        self.hang = None
+        self.hang = dict()
         super().__init__()
 
-    def set_hang(self, hang):
-        self.hang = hang
+    def set_hang(self, hang, hang_pattern):
+        self.hang[hang_pattern] = hang
 
     def hang_in(self, message):
         usercontext = self.context.get(message.user.id, '')
-        usercontext += ' ' + message.text.strip()
+        usercontext += message.text.strip() + ' '
         self.context[message.user.id] = usercontext
-        self.hang.activate_hang(message)
+        first_word = usercontext.split(' ')[0]
+        self.hang[first_word].activate_hang(message)
         return usercontext
 
     def hang_out(self, message):
-        self.hang.deactivate_hang(message)
+        first_word = self.context[message.user.id].split(' ')[0]
+        self.hang[first_word].deactivate_hang(message)
         self.context.pop(message.user.id, None)
+
 
 app = ContextApp()
 

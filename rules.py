@@ -1,6 +1,6 @@
 URL = 'http://localhost:5000'
 
-RULES = {'person':
+RULES_FLASK = {'person':
          {'list': {'type': 'json_api',
                    'method': 'GET',
                    'resource': URL + '/api/person',
@@ -31,7 +31,7 @@ RULES = {'person':
           }
          }
 
-RULES2 = {'tec':
+RULES_TEC = {'tec':
           {'filter': {'type': 'json_api',
                       'method': 'GET',
                       'resource': URL + '/_filter_documents',
