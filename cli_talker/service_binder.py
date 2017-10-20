@@ -104,9 +104,11 @@ class RESTWaiter(BaseWaiter):
             if _pk is not None:
                 resource = resource + '/%s' % _pk
             else:
-                local_list = [v for k, v in _data.items()]
-                resource = resource + '%20'.join(local_list)
-        print('GET:', resource)
+                local_list = [str(k) + '=' + str(v) for k, v in params.items()]
+                print(local_list)
+                if len(local_list) > 0:
+                    resource = resource + '?' + '%20'.join(local_list)
+        print('GET:', resource, params)
         response = requests.get(resource, data=_data,
                                 headers={'content-type': 'application/json'})
         if response.status_code == 200:  # Success

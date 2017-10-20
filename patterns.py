@@ -2,8 +2,8 @@
 from botteryapp import app
 from bottery.conf.patterns import Pattern, DefaultPattern
 from bottery.views import pong
-from cli_talker.views import (END_HOOK_LIST, help_text, interactive,
-                              say_help, two_tokens)
+from cli_talker.views import (END_HOOK_LIST, flask_restless_view, help_text,
+                              say_help, tec_view)
 
 
 class HangUserPattern(DefaultPattern):
@@ -23,13 +23,19 @@ class HangUserPattern(DefaultPattern):
         if message.user.id in self.hanged_users:
             return self.view
 
-hang_user_pattern = HangUserPattern(interactive)
 
-app.set_hang(hang_user_pattern)
+hang_user_pattern = HangUserPattern(flask_restless_view)
+
+hang_user_pattern_tec = HangUserPattern(tec_view)
+
+app.set_hang(hang_user_pattern, 'person')
+app.set_hang(hang_user_pattern_tec, 'tec')
 
 patterns = [
     hang_user_pattern,
-    Pattern('tec', interactive),
+    hang_user_pattern_tec,
+    Pattern('tec', tec_view),
+    Pattern('person', flask_restless_view),
     Pattern('ping', pong),
     Pattern('help', help_text),
     DefaultPattern(say_help)
