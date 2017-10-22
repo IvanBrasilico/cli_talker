@@ -99,18 +99,17 @@ class RESTWaiter(BaseWaiter):
         elif isinstance(params, str):
             resource = resource + '/%s' % params
         elif isinstance(params, dict):
-            _data = params
             _pk = params.pop('pk', None)
             if _pk is not None:
                 resource = resource + '/%s' % _pk
             else:
                 local_list = [str(k) + '=' + str(v) for k, v in params.items()]
-                print(local_list)
-                if len(local_list) > 0:
+                # print(local_list)
+                if local_list:
                     resource = resource + '?' + '%20'.join(local_list)
         print('GET:', resource, params)
-        response = requests.get(resource, data=_data,
-                                headers={'content-type': 'application/json'})
+        response = requests.get(resource,
+                                headers={'content-type': 'application/json; charset=utf8'})
         if response.status_code == 200:  # Success
             return response.text, None, response.status_code
         # Failure
@@ -126,9 +125,9 @@ class RESTWaiter(BaseWaiter):
                 _('Post method needs the data to be inserted.'
                   ' Invalid data passed!'))
 
-        print(params)
+        # print(params)
         response = requests.post(resource, data=json.dumps(params),
-                                 headers={'content-type': 'application/json'})
+                                 headers={'content-type': 'application/json; charset=utf8'})
         # print(response.status_code, response.headers['content-type'])
         if response.status_code == 201:  # Success
             return response.text, None, response.status_code
@@ -149,7 +148,7 @@ class RESTWaiter(BaseWaiter):
                 _('Put method needs the primary key. No primary key passed!'))
         response = requests.put(resource + '/%s' % _pk,
                                 data=json.dumps(params),
-                                headers={'content-type': 'application/json'})
+                                headers={'content-type': 'application/json; charset=utf8'})
         if response.status_code == 200:  # Success
             return response.text, None, response.status_code
         # Failure
@@ -170,7 +169,7 @@ class RESTWaiter(BaseWaiter):
                 resource = resource + '/%s' % _pk
 
         response = requests.delete(resource, data=_data,
-                                   headers={'content-type': 'application/json'})
+                                   headers={'content-type': 'application/json; charset=utf8'})
         if response.status_code == 204:  # Success
             return response.text, None, response.status_code
         # Failure

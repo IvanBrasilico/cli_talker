@@ -82,9 +82,6 @@ def talker(text, rules):
             [{'name': 'name1', 'required': True},
             {'name': 'name2', 'required': False}
             ],
-        {'subcommand2': 'url2'} },
-            'command2': 'url3'
-        }
 '''
     # Splits like in shell: splits/tokenizes on spaces,
     # preserving expressions between quotes
@@ -111,8 +108,14 @@ def talker(text, rules):
                 str(n_params_passed), True
         # else n_params_passed >= n_required
         for name, value in zip(params, alist[level:]):
-            bind_params[name['name']] = value
+            # TEST if params are NAMED, else, try sequential binding
+            index = value.find(name['name'] + '=')
+            if index >= 0:
+                name_value = value.split('=')
+                bind_params[name_value[0]] = name_value[1]
+            else:
+                bind_params[name['name']] = value
 
-    dict_resposta = actual_level.copy()
-    dict_resposta['params'] = bind_params
-    return dict_resposta, False
+    result_dict = actual_level.copy()
+    result_dict['params'] = bind_params
+    return result_dict, False

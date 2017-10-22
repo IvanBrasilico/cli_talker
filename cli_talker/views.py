@@ -54,24 +54,21 @@ def flask_restless_view(message):
 
 def interactive(message, cli_rules):
     app.hang_in(message)
-    response, stay = talker(app.context[message.user.id], cli_rules)
+    command, stay = talker(app.context[message.user.id], cli_rules)
     if not stay:
         app.hang_out(message)
-    print('comando:', response)
-    if isinstance(response, dict) and waiter is not None:
-        response, error, status_code = waiter.process_order(response)
+    # print('comando:', command)
+    if isinstance(command, dict) and waiter is not None:
+        response, error, status_code = waiter.process_order(command)
         # response = response.decode()
         print('Erro:', error, status_code)
         if error is None:
             response = clever_json2md(response)
         else:
             response = clever_json2md(error)
-    print('Remote:', response, type(response))
-    response = response.encode('utf8', 'replace')
-    print(type(response), response)
-    response = response.decode("utf-8", "replace")
-    print(type(response), response)
-    return response
+        return response
+
+    return json.dumps(command)
 
 
 def clever_json2md(response):
@@ -83,17 +80,17 @@ def clever_json2md(response):
     if isinstance(json_response, list):
         for linha in json_response:
             if isinstance(linha, dict):
-                print('list-dict')
+                # print('list-dict')
                 for key, value in linha.items():
                     str_response = str_response + \
                         key + ': ' + str(value) + ' \n '
             elif isinstance(linha, str):
                 str_response = json_response
     elif isinstance(json_response, dict):
-        print('dict')
+        # print('dict')
         for key, value in json_response.items():
             str_response = str_response + key + ': ' + str(value) + ' \n '
     elif isinstance(json_response, str):
-        print('STR***')
+        # print('STR***')
         str_response = json_response
     return str_response
