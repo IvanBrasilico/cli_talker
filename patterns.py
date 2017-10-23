@@ -4,7 +4,8 @@ from bottery.conf.patterns import Pattern, DefaultPattern
 from bottery.views import pong
 from cli_talker.views import (flask_restless_view, help_text,
                               say_help, tec_view)
-from sql_alchemy_view.views import input_example, sql_view
+from sql_alchemy_view.views import input_example, note_view, notebook_view
+
 
 
 class FunctionPattern(Pattern):
@@ -40,27 +41,34 @@ class HangUserPattern(DefaultPattern):
 
 hang_user_pattern = HangUserPattern(flask_restless_view)
 hang_user_pattern_tec = HangUserPattern(tec_view)
-hang_user_pattern_sql = HangUserPattern(sql_view)
+hang_user_pattern_notebook = HangUserPattern(notebook_view)
+hang_user_pattern_note = HangUserPattern(note_view)
 hang_user_pattern_input = HangUserPattern(input_example)
 
 app.set_hang(hang_user_pattern, 'person')
 app.set_hang(hang_user_pattern_tec, 'tec')
-app.set_hang(hang_user_pattern_sql, 'notebook')
+app.set_hang(hang_user_pattern_notebook, 'notebook')
+app.set_hang(hang_user_pattern_note, 'note')
 app.set_hang(hang_user_pattern_input, 'project')
 
 
 def first_word(pattern, text):
-    return text.find(pattern) == 0
+    words = text.split(' ')
+    if words:
+        return words[0] == pattern
+    return False
 
 
 patterns = [
     hang_user_pattern,
     hang_user_pattern_tec,
-    hang_user_pattern_sql,
+    hang_user_pattern_notebook,
+    hang_user_pattern_note,
     hang_user_pattern_input,
     Pattern('tec', tec_view),
     Pattern('person', flask_restless_view),
-    FunctionPattern('notebook', sql_view, first_word),
+    FunctionPattern('notebook', notebook_view, first_word),
+    FunctionPattern('note', note_view, first_word),
     Pattern('project', input_example),
     Pattern('ping', pong),
     Pattern('help', help_text),

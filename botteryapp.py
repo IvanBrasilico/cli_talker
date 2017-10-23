@@ -18,7 +18,8 @@ class ContextApp(App):
         self.hang[hang_pattern] = hang
 
     def hang_in(self, message):
-        self.user_session[message.user.id] = dict()
+        if self.user_session.get(message.user.id) is None:
+            self.user_session[message.user.id] = dict()
         usercontext = self.context.get(message.user.id, '')
         usercontext += message.text.strip() + ' '
         self.context[message.user.id] = usercontext
@@ -31,6 +32,24 @@ class ContextApp(App):
         self.hang[first_word].deactivate_hang(message)
         self.context.pop(message.user.id, None)
         self.user_session.pop(message.user.id, None)
+
+    def hang_forward(self, message, goto_view_name):
+        usercontext = self.context.get(message.user.id, '')
+        first_word = usercontext.split(' ')[0]
+        self.context[message.user.id] = goto_view_name + ' '
+        self.hang[first_word].deactivate_hang(message)
+        self.hang[goto_view_name].activate_hang(message)
+        message.text = goto_view_name
+        return self.hang[goto_view_name].view(message)
+
+    def retrieve_from_user_session(self, userid, variable_name):
+        user_dict = self.user_session.get(userid)
+        if user_dict:
+            return user_dict.get(variable_name)
+        return None
+
+    def store_on_user_session(self, userid, variable_name, value):
+        self.user_session[userid][variable_name] = value
 
     def input(self, message, name, prompt, valid_values=None):
         if not self.input_queue.get(message.user.id, None):
@@ -70,16 +89,16 @@ class ContextApp(App):
 
         next_prompt, valid_values = list(user_input_dict.values())[0]
         if valid_values:
-                next_prompt = next_prompt + ' - ' + ' '.join(valid_values)
+            next_prompt = next_prompt + ' - ' + ' '.join(valid_values)
         return True, next_prompt
 
 
-app=ContextApp()
+app = ContextApp()
 
 
 if __name__ == '__main__':
     logging.config.dictConfig(DEFAULT_LOGGING)
-    logger=logging.getLogger('bottery')
+    logger = logging.getLogger('bottery')
     logger.setLevel(logging.DEBUG)
 
     app.run()

@@ -1,4 +1,4 @@
-''' Demonstrates the use of Context_App hanging to allow 
+''' Demonstrates the use of Context_App hanging to allow
 conversational context on access to a DataBase'''
 import json
 import os
@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker
 
 from botteryapp import app
 
@@ -51,11 +51,10 @@ Notebook.notes = relationship(
     "Note", order_by=Note.id, back_populates="notebook")
 
 
-def sql_view(message):
+def notebook_view(message):
     '''No rules mapping route, all routes "hard-coded"
     It could be made an object like RESTWaiter, to process "orders"
     and forward to a sql_alchemy object'''
-    app.hang_in(message)
     words = shlex.split(message.text)
     command = words[0]
     params = None
@@ -64,6 +63,7 @@ def sql_view(message):
     if len(words) > 1:
         params = words[1:]
     if command == 'notebook':
+        app.hang_in(message)
         result = _('Welcome to notebooks Application! \n'
                    'Type "list" to view your notebooks \n'
                    'Type "add" "name" to add a notebook \n'
@@ -86,21 +86,97 @@ def sql_view(message):
             notebook = session.query(Notebook).filter(
                 Notebook.name == params[0]).first()
             if notebook is None:
-                result = 'Notebook ' + params[0] + ' não encontrado'
+                result = _('Notebook ') + params[0] + _(' not found')
             else:
-                result = 'Notebook ' + str(notebook.id) + ' ' + notebook.name + \
-                    ' opened!'
+                result = _('Notebook ') + str(notebook.id) + ' ' + notebook.name + \
+                    _(' opened!')
+                app.store_on_user_session(message.user.id,
+                                          'notebookid', notebook.id)
+                # app.redirect('note', result, messsage)
+                result = result + app.hang_forward(message, 'note')
+
         else:
             result = _('Error! Parameter "name" not entered.')
     elif command == 'add':
         if params:
             notebook = Notebook(params[0])
-            result = 'Notebook ' + notebook.name + \
-                     ' added!'
+            result = _('Notebook ') + notebook.name + \
+                _(' added!')
             session.add(notebook)
             session.commit()
         else:
             result = _('Error! Parameter "name" not entered.')
+    elif command == 'exit':
+        app.hang_out(message)
+        result = _('Exiting...')
+
+    return json.dumps(result)
+
+
+def note_view(message):
+    notebookid = app.retrieve_from_user_session(message.user.id,
+                                                'notebookid')
+    if notebookid is None:
+        return _('No notebook opened! Type "notebook" first')
+    notebook = session.query(Notebook).filter(
+        Notebook.id == notebookid
+    ).first()
+    if notebook is None:
+        return _('Error! Notebook not found!')
+    words = shlex.split(message.text)
+    command = words[0]
+    params = None
+    result = _(
+        'Sorry. I cannot understand you. Type note for a list of options.')
+    if len(words) > 1:
+        params = words[1:]
+    if command == 'note':
+        result = _('Welcome to notebook ') + notebook.name + '\n' + \
+            _('Type "list" to view your notebook notes') + ' \n' + \
+            _('Type "add" "title" "content" to add a note') + ' \n' + \
+            _('Type "del" "name" to delete a note') + ' \n' + \
+            _('Type "close" to close the notebook') + ' \n' + \
+            _('Type "exit" to get out of application \n')
+        if params:  # Process next command if exists
+            if params[0] in ['list', 'del', 'add']:
+                command = params[0]
+                if len(params) > 1:
+                    params = params[1:]
+                else:
+                    params = []
+
+    if command == 'list':
+        result = [n.title + ' - ' + n.text for n in notebook.notes]
+        result = '\n'.join(result)
+    elif command == 'del':
+        if params:
+            note = session.query(Note).filter(
+                Note.title == params[0]).first()
+            if note is None:
+                result = _('Note ') + params[0] + _(' not found')
+            else:
+                session.delete(note)
+                session.commit()
+                result = _('Note ') + str(note.id) + ' ' + note.title + \
+                    _(' deleted!')
+        else:
+            result = _('Error! Parameter "title" not entered.')
+    elif command == 'add':
+        if len(params) == 2:
+            note = Note(notebook, params[0], params[1])
+            result = _('Note ') + note.title + \
+                (' added!')
+            session.add(note)
+            session.commit()
+        else:
+            if params:
+                result = _('Error! Parameter 2 "content" not entered.')
+            else:
+                result = _('Error! No parameters entered.')
+
+    elif command == 'close':
+        app.hang_out(message)
+        result = _('Closing notebook...')
     elif command == 'exit':
         app.hang_out(message)
         result = _('Exiting...')
