@@ -91,7 +91,6 @@ class RESTWaiter(BaseWaiter):
     return response, error and status_code'''
 
     def get_method(self, resource, params=None):
-        _data = {}
         if params is None:
             pass
         elif isinstance(params, list):
