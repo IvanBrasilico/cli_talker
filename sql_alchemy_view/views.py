@@ -1,4 +1,4 @@
-''' Demonstrates the use of Context_App hanging to allow
+''' Demonstrates the use of Context_ch hanging to allow
 conversational context on access to a DataBase'''
 import json
 import os
@@ -9,7 +9,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, sessionmaker
 
-from botteryapp import app
+from botteryapp import ch, ih
 
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -52,7 +52,7 @@ Notebook.notes = relationship(
 
 
 def notebook_view(message):
-    '''No rules mapping route, all routes "hard-coded"
+    '''No rules mching route, all routes "hard-coded"
     It could be made an object like RESTWaiter, to process "orders"
     and forward to a sql_alchemy object'''
     words = shlex.split(message.text)
@@ -63,7 +63,7 @@ def notebook_view(message):
     if len(words) > 1:
         params = words[1:]
     if command == 'notebook':
-        app.hang_in(message)
+        ch.hang_in(message)
         result = _('Welcome to notebooks Application! \n'
                    'Type "list" to view your notebooks \n'
                    'Type "add" "name" to add a notebook \n'
@@ -90,10 +90,10 @@ def notebook_view(message):
             else:
                 result = _('Notebook ') + str(notebook.id) + ' ' + notebook.name + \
                     _(' opened!')
-                app.store_on_user_session(message.user.id,
+                ch.store_on_user_session(message.user.id,
                                           'notebookid', notebook.id)
-                # app.redirect('note', result, messsage)
-                result = result + app.hang_forward(message, 'note')
+                # ch.redirect('note', result, messsage)
+                result = result + ch.hang_forward(message, 'note')
 
         else:
             result = _('Error! Parameter "name" not entered.')
@@ -107,14 +107,14 @@ def notebook_view(message):
         else:
             result = _('Error! Parameter "name" not entered.')
     elif command == 'exit':
-        app.hang_out(message)
+        ch.hang_out(message)
         result = _('Exiting...')
 
     return json.dumps(result)
 
 
 def note_view(message):
-    notebookid = app.retrieve_from_user_session(message.user.id,
+    notebookid = ch.retrieve_from_user_session(message.user.id,
                                                 'notebookid')
     if notebookid is None:
         return _('No notebook opened! Type "notebook" first')
@@ -175,33 +175,33 @@ def note_view(message):
                 result = _('Error! No parameters entered.')
 
     elif command == 'close':
-        app.hang_out(message)
+        ch.hang_out(message)
         result = _('Closing notebook...')
     elif command == 'exit':
-        app.hang_out(message)
+        ch.hang_out(message)
         result = _('Exiting...')
 
     return json.dumps(result)
 
 
 def input_example(message):
-    # app.input(message, name, prompt, valid_values=[]) ->
+    # ih.input(message, name, prompt, valid_values=[]) ->
     #   Creates an name entry in a OrderedDict with a tuple
     #   (prompt, valid_values)
     # user_session ->
     #   dict with returned user inputs
-    if not app.input_queue:
-        app.hang_in(message)
-        app.input(message, 'name', 'Enter Project Name:')
-        app.input(message, 'language', 'Enter Project Language: ',
+    if not ih.input_queue:
+        ih.hang_in(message)
+        ih.input(message, 'name', 'Enter Project Name:')
+        ih.input(message, 'language', 'Enter Project Language: ',
                   ['python2', 'python3'])
-        app.input(message, 'url', 'Enter Project site:')
-        app.input(message, 'priority', 'Enter Project priority:',
+        ih.input(message, 'url', 'Enter Project site:')
+        ih.input(message, 'priority', 'Enter Project priority:',
                   ['insane', 'medium', 'dontmatter'])
-        return app.print_next_input(message)
-    stay, response = app.next_input_queue(message)
+        return ih.print_next_input(message)
+    stay, response = ih.next_input_queue(message)
     if stay:
         return response
     # Save project and exit view
-    app.hang_out(message)
+    ih.hang_out(message)
     return 'Project created: ' + response

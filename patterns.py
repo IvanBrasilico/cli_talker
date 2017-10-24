@@ -1,5 +1,5 @@
 '''Configuration of the routes, or vocabulary of the bot'''
-from botteryapp import app
+from botteryapp import ch, ih
 from bottery.conf.patterns import Pattern, DefaultPattern
 from bottery.views import pong
 from cli_talker.views import (flask_restless_view, help_text,
@@ -45,11 +45,11 @@ hang_user_pattern_notebook = HangUserPattern(notebook_view)
 hang_user_pattern_note = HangUserPattern(note_view)
 hang_user_pattern_input = HangUserPattern(input_example)
 
-app.set_hang(hang_user_pattern, 'person')
-app.set_hang(hang_user_pattern_tec, 'tec')
-app.set_hang(hang_user_pattern_notebook, 'notebook')
-app.set_hang(hang_user_pattern_note, 'note')
-app.set_hang(hang_user_pattern_input, 'project')
+ch.set_hang(hang_user_pattern, 'person')
+ch.set_hang(hang_user_pattern_tec, 'tec')
+ch.set_hang(hang_user_pattern_notebook, 'notebook')
+ch.set_hang(hang_user_pattern_note, 'note')
+ih.set_hang(hang_user_pattern_input, 'project')
 
 
 def first_word(pattern, text):
